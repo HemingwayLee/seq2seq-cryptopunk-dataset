@@ -39,10 +39,19 @@ const main = async (numberOfOutputs) => {
   // trait type avail for each punk
   const combinations = allPossibleCases(traitTypes,numberOfOutputs)
   
-    for (var n = 0; n < combinations.length; n++) {
-      const randomBackground = backgrounds[Math.floor(Math.random() * backgrounds.length)]
-      await drawImage(combinations[n] , randomBackground, n);
-    }
+  let allText = ""
+  for (var n = 0; n < combinations.length; n++) {
+    const randomBackground = backgrounds[Math.floor(Math.random() * backgrounds.length)]
+    const text = await drawImage(combinations[n] , randomBackground, n);
+    console.log(text);
+    allText += `${n+1}.png\t${text}\n`
+  }
+
+  fs.writeFileSync(`${dir.outputs}/gt.csv`, allText, function(err){
+    if(err) throw err;
+
+    console.log("csv saved!")
+  });
 };
 
 const recreateOutputsDir = () => {
@@ -83,8 +92,6 @@ const allPossibleCases = (arraysToCombine, max) => {
   }
 
   return combinations;
-
-  return [];
 };
 
 
@@ -105,7 +112,7 @@ const drawImage= async (traitTypes, background, index) => {
   console.log(`Progress: ${index+1}/ ${totalOutputs}`)
 
   //deep copy
-  let metaDrawableTraits = JSON.parse(JSON.stringify(drawableTraits))
+  let metaDrawableTraits = JSON.parse(JSON.stringify(traitTypes))
 
   //remove .png from attributes
   metaDrawableTraits.map(x => {
@@ -132,6 +139,14 @@ const drawImage= async (traitTypes, background, index) => {
     `${dir.outputs}/punks/${index+1}.png`, 
     canvas.toBuffer("image/png")
   );
+
+  return metaDrawableTraits.map(x => {
+    if (x.value == "") {
+      return "None"
+    } else {
+      return x.value
+    }
+  });
 }
 
 //main
