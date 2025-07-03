@@ -26,13 +26,12 @@ const main = async (numberOfOutputs) => {
   const types = fs.readdirSync(traitTypesDir);
 
   // set all priotized layers to be drawn first. for eg: punk type, top... You can set these values in the priorities array in line 21
-  const traitTypes = priorities.concat(types.filter(x=> !priorities.includes(x)))
-                      .map(traitType => (
-                        fs.readdirSync(`${traitTypesDir}/${traitType}/`)
-                      .map(value=> {
-                          return {trait_type: traitType, value: value}
-                        }).concat({trait_type: traitType, value: 'N/A'})
-                      ));
+  const traitTypes = priorities.concat(types.filter(x=> !priorities.includes(x))).map(traitType => (
+    fs.readdirSync(`${traitTypesDir}/${traitType}/`)
+  .map(value=> {
+      return {trait_type: traitType, value: value}
+    }).concat({trait_type: traitType, value: 'N/A'})
+  ));
 
   const backgrounds = fs.readdirSync(dir.background);
 
@@ -72,7 +71,6 @@ const allPossibleCases = (arraysToCombine, max) => {
     permsCount *= (arraysToCombine[i].length || 1);
   }
 
-
   if(!!max && max>0) {
     console.log(max);
     permsCount = max;
@@ -80,15 +78,14 @@ const allPossibleCases = (arraysToCombine, max) => {
 
   totalOutputs = permsCount;
 
-
   const getCombination = (n, arrays, divisors) => arrays.reduce((acc, arr, i) => {
-      acc.push(arr[Math.floor(n / divisors[i]) % arr.length]);
-      return acc;
+    acc.push(arr[Math.floor(n / divisors[i]) % arr.length]);
+    return acc;
   }, []);
 
   const combinations = [];
   for (let i = 0; i < permsCount; i++) {
-      combinations.push(getCombination(i, arraysToCombine, divisors));
+    combinations.push(getCombination(i, arraysToCombine, divisors));
   }
 
   return combinations;
@@ -104,9 +101,9 @@ const drawImage= async (traitTypes, background, index) => {
   //'N/A': means that this punk doesn't have this trait type
   const drawableTraits = traitTypes.filter(x=> x.value !== 'N/A')
   for (let index = 0; index < drawableTraits.length; index++) {
-      const val = drawableTraits[index];
-      const image = await loadImage(`${dir.traitTypes}/${val.trait_type}/${val.value}`);
-      ctx.drawImage(image,0,0,imageFormat.width,imageFormat.height);
+    const val = drawableTraits[index];
+    const image = await loadImage(`${dir.traitTypes}/${val.trait_type}/${val.value}`);
+    ctx.drawImage(image,0,0,imageFormat.width,imageFormat.height);
   }
 
   console.log(`Progress: ${index+1}/ ${totalOutputs}`)
